@@ -45,5 +45,7 @@ alpha <- 0.05
 if(AB.herd.result$p.value < alpha){ "some herdiness" }else{ "unlikely to have herdiness"}
 if(AC.herd.result$p.value < alpha){ "some herdiness" }else{ "unlikely to have herdiness"}
 
+#   having a vip special access deal and wine preference
+#   => to some extent people are affected by the allusion of special treatment
 if(AB.special.result$p.value < alpha){ "vip matters" }else{ "unlikely that vip matters"}
 if(AC.special.result$p.value < alpha){ "vip matters" }else{ "unlikely that vip matters"}
