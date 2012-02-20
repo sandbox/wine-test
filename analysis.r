@@ -1,3 +1,4 @@
+
 experiment.one <- read.table("samples/survey_1_2.csv", header = TRUE, sep=",")
 
 # Tables for the follow the herd experiment
@@ -49,3 +50,44 @@ if(AC.herd.result$p.value < alpha){ "some herdiness" }else{ "unlikely to have he
 #   => to some extent people are affected by the allusion of special treatment
 if(AB.special.result$p.value < alpha){ "vip matters" }else{ "unlikely that vip matters"}
 if(AC.special.result$p.value < alpha){ "vip matters" }else{ "unlikely that vip matters"}
+
+
+library("ggplot2")
+
+dist.AB.herd <- AB.herd / apply(AB.herd, 1, sum)
+dist.AC.herd <- AC.herd / apply(AC.herd, 1, sum)
+dist.AB.special <- AB.special / apply(AB.special, 1, sum)
+dist.AC.special <- AC.special / apply(AC.special, 1, sum)
+
+# These bar charts don't look very good.
+barplot(dist.AB.herd, main="Follow the Herd? Distribution of Wine Preference",
+        xlab="Wine Tasted",
+        legend = rownames(AB.herd), beside=TRUE)
+barplot(dist.AC.herd, main="Follow the Herd? Distribution of Wine Preference",
+        xlab="Wine Tasted",
+        legend = rownames(AC.herd), beside=TRUE)
+barplot(dist.AB.special, main="VIP syndrome: Distribution of Wine Preference",
+        xlab="Wine Tasted",
+        legend = rownames(AB.special), beside=TRUE)
+barplot(dist.AC.special, main="VIP syndrome: Distribution of Wine Preference",
+        xlab="Wine Tasted",
+        legend = rownames(AC.special), beside=TRUE)
+
+# ggplot bar charts (need to add titles and other things legend markers)
+nice.plot <- function(exptable, filename="barplot.pdf") {
+  df = data.frame(prop=c(exptable[,1],
+                    exptable[,2]),
+    group=rownames(exptable),
+    wine=rep(colnames(exptable), each=2))
+
+  # do things to change color here or potentially even save to a pdf
+  ggplot(df, aes(wine, prop, fill=group)) +
+    geom_bar(position="dodge",stat="identity") +
+      coord_flip()
+  ggsave(filename)
+}
+
+nice.plot(dist.AB.herd)
+nice.plot(dist.AC.herd)
+nice.plot(dist.AB.special)
+nice.plot(dist.AC.special)
