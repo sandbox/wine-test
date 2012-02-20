@@ -87,7 +87,7 @@ nice.plot <- function(exptable, filename="barplot.pdf") {
   ggsave(filename)
 }
 
-nice.plot(dist.AB.herd)
-nice.plot(dist.AC.herd)
-nice.plot(dist.AB.special)
-nice.plot(dist.AC.special)
+nice.plot(dist.AB.herd, "experiment_1_AB.pdf")
+nice.plot(dist.AC.herd, "experiment_1_AC.pdf")
+nice.plot(dist.AB.special, "experiment_2_AB.pdf")
+nice.plot(dist.AC.special, "experiment_2_AC.pdf")
