@@ -46,3 +46,33 @@ rank.chart <- function(ranks, title="Blah", filename="word-rank.pdf") {
 
 rank.chart(wine.D.ranks, "Wine D Word Usage Rank Given Association", "word-rank-wine-d.pdf")
 rank.chart(wine.E.ranks, "Wine E Word Usage Rank Given Association", "word-rank-wine-e.pdf")
+
+## creating the word cloud visualization
+library(wordcloud)
+library(RColorBrewer)
+
+raw.words <- read.table("samples/survey_3.csv", header = TRUE, sep=",")
+colnames(raw.words) <- c(colnames(raw.words)[1:2], as.character(words[as.integer(sub("X","",colnames(raw.words)[-(1:2)])),1]))
+raw.words.melt <- melt(raw.words, id.vars = c("treatment", "wine"), fun=sum)
+word.freq.df <- melt(cast(wine + treatment ~ variable | value, data=raw.words.melt, fun.aggregate=sum)$`1`)
+
+output.cloud <- function(wine, treatment, d, filename="wordcloud.png") {
+  crit <- d$wine == wine & d$treatment == treatment
+  pal <- brewer.pal(8,"Dark2")
+  png(filename, width=1280,height=800)
+  wordcloud(d$variable[crit],d$value[crit],
+            scale=c(8,.2),
+            min.freq=3,
+            max.words=Inf,
+            random.order=FALSE,
+            rot.per=.15,
+            colors=pal)
+  dev.off()
+}
+
+output.cloud(1, 1, word.freq.df, "Wine D as Earthy.png")
+output.cloud(2, 1, word.freq.df, "Wine E as Berry.png")
+output.cloud(1, 2, word.freq.df, "Wine E as Earthy.png")
+output.cloud(2, 2, word.freq.df, "Wine D as Berry.png")
+
+## dot chart visualization

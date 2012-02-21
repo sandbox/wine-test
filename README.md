@@ -21,6 +21,13 @@ Scripts and visualizations to analyze a wine tasting experiment.
   * wine - the wine shown
     * 1 - earthy picture (D when treatment==1, E when treatment==2),
     * 2 - berry picture  (D when treatment==2, E when treatment==1)
+
+    wine,treatment
+    1,1   =>  D earthy
+    1,2   =>  E earthy
+    2,1   =>  E berry
+    2,2   =>  D berry
+    
   * 1,...,12 - the row index of the word used (lookup in `samples/descriptors.csv`)
 
 * samples/descriptors.csv
