@@ -1,4 +1,3 @@
-
 experiment.one <- read.table("samples/survey_1_2.csv", header = TRUE, sep=",")
 
 # Tables for the follow the herd experiment
@@ -74,20 +73,26 @@ barplot(dist.AC.special, main="VIP syndrome: Distribution of Wine Preference",
         legend = rownames(AC.special), beside=TRUE)
 
 # ggplot bar charts (need to add titles and other things legend markers)
-nice.plot <- function(exptable, filename="barplot.pdf") {
+nice.plot <- function(exptable, filename="barplot.pdf", fillvals=c("#00C0c3", "#fa736f")) {
   df = data.frame(prop=c(exptable[,1],
                     exptable[,2]),
     group=rownames(exptable),
     wine=rep(colnames(exptable), each=2))
 
   # do things to change color here or potentially even save to a pdf
-  ggplot(df, aes(wine, prop, fill=group)) +
+  ggplot(df, aes(group, prop, fill=wine)) +
     geom_bar(position="dodge",stat="identity") +
-      coord_flip()
+      coord_flip() +
+        scale_fill_manual(values=fillvals)
   ggsave(filename)
 }
 
-nice.plot(dist.AB.herd, "experiment_1_AB.pdf")
-nice.plot(dist.AC.herd, "experiment_1_AC.pdf")
-nice.plot(dist.AB.special, "experiment_2_AB.pdf")
-nice.plot(dist.AC.special, "experiment_2_AC.pdf")
+# pick the wine colors as represented in the bar graph
+wine.A <- "#00C0c3"
+wine.B <- "#fa736f"
+wine.C <- "#e79d31"
+
+nice.plot(dist.AB.herd, "experiment_1_AB.pdf", c(wine.A, wine.B))
+nice.plot(dist.AC.herd, "experiment_1_AC.pdf", c(wine.A, wine.C))
+nice.plot(dist.AB.special, "experiment_2_AB.pdf", c(wine.A, wine.B))
+nice.plot(dist.AC.special, "experiment_2_AC.pdf", c(wine.A, wine.C))
