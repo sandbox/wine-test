@@ -80,6 +80,7 @@ nice.plot <- function(exptable, filename="barplot.pdf", fillvals=c("#00C0c3", "#
     wine=rep(colnames(exptable), each=2))
 
   # do things to change color here or potentially even save to a pdf
+  # switch group and wine in this line to change grouping (group by treatment or group by wine)
   ggplot(df, aes(group, prop, fill=wine)) +
     geom_bar(position="dodge",stat="identity") +
       coord_flip() +
