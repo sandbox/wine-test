@@ -54,7 +54,8 @@ library(RColorBrewer)
 raw.words <- read.table("samples/survey_3.csv", header = TRUE, sep=",")
 colnames(raw.words) <- c(colnames(raw.words)[1:2], as.character(words[as.integer(sub("X","",colnames(raw.words)[-(1:2)])),1]))
 raw.words.melt <- melt(raw.words, id.vars = c("treatment", "wine"), fun=sum)
-word.freq.df <- melt(cast(wine + treatment ~ variable | value, data=raw.words.melt, fun.aggregate=sum)$`1`)
+raw.words.melt.cast <- cast(wine + treatment ~ variable | value, data=raw.words.melt, fun.aggregate=sum)$`1`
+word.freq.df <- melt(raw.words.melt.cast)
 
 output.cloud <- function(wine, treatment, d, filename="wordcloud.png") {
   crit <- d$wine == wine & d$treatment == treatment
@@ -65,8 +66,9 @@ output.cloud <- function(wine, treatment, d, filename="wordcloud.png") {
             min.freq=3,
             max.words=Inf,
             random.order=FALSE,
-            rot.per=.15,
-            colors=pal)
+            ordered.colors=TRUE,
+            rot.per=.10,
+            colors=as.character(words$color))
   dev.off()
 }
 
@@ -76,3 +78,8 @@ output.cloud(1, 2, word.freq.df, "Wine E as Earthy.png")
 output.cloud(2, 2, word.freq.df, "Wine D as Berry.png")
 
 ## dot chart visualization
+## wine,actual,earthy.scaled,berry.scaled
+## D,12.9,5.9,20.9
+word.proportion <- raw.words.melt.cast/rowSums(raw.words.melt.cast)
+word.proportion$wine <- c(1, 1, 2, 2)
+word.proportion$treatment <- c(1, 2, 1, 2)
