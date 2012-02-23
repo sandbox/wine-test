@@ -83,7 +83,6 @@ nice.plot <- function(exptable, filename="barplot.pdf", fillvals=c("#00C0c3", "#
   # switch group and wine in this line to change grouping (group by treatment or group by wine)
   ggplot(df, aes(group, prop, fill=wine)) +
     geom_bar(position="dodge",stat="identity") +
-      coord_flip() +
         scale_fill_manual(values=fillvals)
   ggsave(filename)
 }
