@@ -33,14 +33,15 @@ wine.E.ranks <- word.ranks(wine.E.berry.ranks, wine.E.earthy.ranks)
 
 rank.chart <- function(ranks, title="Blah", filename="word-rank.pdf") {
   graph.df <- melt(ranks)
-  ggplot(graph.df, aes(factor(variable), value, group = word, colour = word, label = word)) +
+  ggplot(graph.df, aes(factor(variable), value, group = word, colour = color, label = word)) +
     geom_line() +
       geom_text(data = subset(graph.df, variable == "earthy"), aes(x = factor(variable)), size = 3.5, hjust = 0) +
         geom_text(data = subset(graph.df, variable == "berry"), aes(x = factor(variable)), size = 3.5, hjust = 1.0) +
           theme_bw() +
             opts(title=title, legend.position = "none", panel.border = theme_blank(), axis.ticks = theme_blank()) +
-              scale_x_discrete(breaks = levels(graph.df$variable), labels = c("berry", "earthy")) +
-                scale_y_continuous(breaks = NA, trans = "reverse") + xlab(NULL) + ylab(NULL)
+              scale_colour_identity() + 
+                scale_x_discrete(breaks = levels(graph.df$variable), labels = c("berry", "earthy")) +
+                  scale_y_continuous(breaks = NA, trans = "reverse") + xlab(NULL) + ylab(NULL)
   ggsave(filename)
 }
 
