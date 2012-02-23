@@ -25,7 +25,7 @@ word.ranks <- function(berry, earthy) {
   earthy.order <- data.frame(earthy=1:length(earthy),word=earthy)
   earthy.order <- earthy.order[with(earthy.order, order(word)), ]
 
-  data.frame(berry=berry.order$berry,earthy=earthy.order$earthy,word=words[earthy.order$word,1])
+  data.frame(berry=berry.order$berry,earthy=earthy.order$earthy,word=words[earthy.order$word,1],color=words[earthy.order$word,3])
 }
 
 wine.D.ranks <- word.ranks(wine.D.berry.ranks, wine.D.earthy.ranks)
