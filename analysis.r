@@ -58,6 +58,8 @@ dist.AB.special <- AB.special / apply(AB.special, 1, sum)
 dist.AC.special <- AC.special / apply(AC.special, 1, sum)
 
 # still unsure how to show the proportion on this
+#   (additional votes) / (total real vote sum at the station)
+# proportion is calculated from within the experiment
 added.to.A.treatment <- experiment.one[3,6] / sum(experiment.one[3,3:5])
 added.to.C.treatment <- experiment.one[4,6] / sum(experiment.one[4,3:5])
 
