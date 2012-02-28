@@ -1,9 +1,11 @@
+library("ggplot2")
+
 experiment.one <- read.table("samples/survey_1_2.csv", header = TRUE, sep=",")
 
 # Tables for the follow the herd experiment
 AB.herd <- matrix(c(
                     # control A       , treatment A added
-                    experiment.one[c(1,3),3] - experiment.one[c(1,3), 5],
+                    experiment.one[c(1,3),3] - experiment.one[c(1,3), 6],
                     # control B       , treatment B
                     experiment.one[c(1,3),4]
                     ), nr=2, dimnames=list(c("control", "treatment"), c("A", "B")))
@@ -12,7 +14,7 @@ AC.herd <- matrix(c(
                     # control A        , treatment A
                     experiment.one[2,3], experiment.one[4,4],
                     # control C        , treatment C added
-                    experiment.one[2,4], experiment.one[4,3] - experiment.one[4,5]
+                    experiment.one[2,4], experiment.one[4,3] - experiment.one[4,6]
                     ), nr=2, dimnames=list(c("control", "treatment"), c("A", "C")))
 
 # Tables for the follow the vip special access experiment
@@ -50,13 +52,14 @@ if(AC.herd.result$p.value < alpha){ "some herdiness" }else{ "unlikely to have he
 if(AB.special.result$p.value < alpha){ "vip matters" }else{ "unlikely that vip matters"}
 if(AC.special.result$p.value < alpha){ "vip matters" }else{ "unlikely that vip matters"}
 
-
-library("ggplot2")
-
 dist.AB.herd <- AB.herd / apply(AB.herd, 1, sum)
 dist.AC.herd <- AC.herd / apply(AC.herd, 1, sum)
 dist.AB.special <- AB.special / apply(AB.special, 1, sum)
 dist.AC.special <- AC.special / apply(AC.special, 1, sum)
+
+# still unsure how to show the proportion on this
+added.to.A.treatment <- experiment.one[3,6] / sum(experiment.one[3,3:5])
+added.to.C.treatment <- experiment.one[4,6] / sum(experiment.one[4,3:5])
 
 # These bar charts don't look very good.
 barplot(dist.AB.herd, main="Follow the Herd? Distribution of Wine Preference",
@@ -73,17 +76,21 @@ barplot(dist.AC.special, main="VIP syndrome: Distribution of Wine Preference",
         legend = rownames(AC.special), beside=TRUE)
 
 # ggplot bar charts (need to add titles and other things legend markers)
-nice.plot <- function(exptable, filename="barplot.pdf", fillvals=c("#00C0c3", "#fa736f")) {
+nice.plot <- function(exptable, filename="barplot.pdf", fillvals=c("#00C0c3", "#fa736f"), added_votes=c(0,0,0,0)) {
   df = data.frame(prop=c(exptable[,1],
-                    exptable[,2]),
+                    exptable[,2],
+                    added_votes),
     group=rownames(exptable),
-    wine=rep(colnames(exptable), each=2))
+    wine=rep(rep(colnames(exptable), each=2), 2))
 
   # do things to change color here or potentially even save to a pdf
   # switch group and wine in this line to change grouping (group by treatment or group by wine)
-  ggplot(df, aes(group, prop, fill=wine)) +
-    geom_bar(position="dodge",stat="identity") +
-        scale_fill_manual(values=fillvals)
+  ggplot(df, aes(wine, prop, fill=wine, colour=wine)) +
+    geom_bar(stat="identity") +
+      facet_grid(. ~ group) +
+        scale_colour_manual(values=c("#000000","#000000")) +
+          scale_fill_manual(values=fillvals) +
+            theme_bw()
   ggsave(filename)
 }
 
@@ -92,7 +99,11 @@ wine.A <- "#00C0c3"
 wine.B <- "#fa736f"
 wine.C <- "#e79d31"
 
-nice.plot(dist.AB.herd, "experiment_1_AB.pdf", c(wine.A, wine.B))
-nice.plot(dist.AC.herd, "experiment_1_AC.pdf", c(wine.A, wine.C))
-nice.plot(dist.AB.special, "experiment_2_AB.pdf", c(wine.A, wine.B))
-nice.plot(dist.AC.special, "experiment_2_AC.pdf", c(wine.A, wine.C))
+                                        #                             votes added to a
+                                        #                           0,0.22,0,0.0
+nice.plot(dist.AB.herd, "experiment_1_AB.pdf", c(wine.A, wine.B), c(0,added.to.A.treatment,0,0))
+                                        #                             votes added to c
+                                        #                           0,0.00,0,0.1
+nice.plot(dist.AC.herd, "experiment_1_AC.pdf", c(wine.A, wine.C), c(0,0,0,added.to.C.treatment))
+nice.plot(dist.AB.special, "experiment_2_AB.pdf", c(wine.A, wine.B), c(0,0,0,0))
+nice.plot(dist.AC.special, "experiment_2_AC.pdf", c(wine.A, wine.C), c(0,0,0,0))
