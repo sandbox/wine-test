@@ -110,3 +110,16 @@ ggplot(graph.freq.df, aes(variable, value, fill=variable, colour=variable)) +
 ggsave("actual/Word Frequency.pdf", width=18,height=12)
 
 # preference count visualizations and analysis
+
+# preference counts when told the truth vs false
+word.freq.table$wine.letter <- factor(c("D", "E", "E", "D"))
+word.freq.table$wine.type <- factor(c("Berry", "Berry", "Earthy", "Earthy"))
+word.freq.table$coherence <- factor(c("Truth", "False", "Truth", "False"), levels=c("Truth", "False"), ordered=TRUE)
+ggplot(word.freq.table,
+       aes(x=wine.letter,
+           y=pref,
+           fill=factor(wine.letter))) +
+  facet_grid(. ~ coherence) +
+  geom_bar(stat="identity") +
+  theme_bw()
+ggsave("actual/pref-count.pdf")
