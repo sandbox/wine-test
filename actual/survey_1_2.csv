@@ -1,0 +1,5 @@
+run_id,station_id,btn0,btn1,btn2,artificial0,artificial1,artificial2
+1,STATION_1,42,0,27,-1,0,0
+1,STATION_2,20,0,8,0,0,0
+1,STATION_3,41,0,23,0,0,37
+1,STATION_4,38,0,18,0,0,0

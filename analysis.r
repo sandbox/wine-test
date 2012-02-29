@@ -109,3 +109,46 @@ nice.plot(dist.AB.herd, "experiment_1_AB.pdf", c(wine.A, wine.B), c(0,added.to.A
 nice.plot(dist.AC.herd, "experiment_1_AC.pdf", c(wine.A, wine.C), c(0,0,0,added.to.C.treatment))
 nice.plot(dist.AB.special, "experiment_2_AB.pdf", c(wine.A, wine.B), c(0,0,0,0))
 nice.plot(dist.AC.special, "experiment_2_AC.pdf", c(wine.A, wine.C), c(0,0,0,0))
+
+######
+#  ACTUAL ANALYSIS FOR BAR CHARTS SINCE THE STUFF CAME OUT VERY DIFFERENTLY
+######
+act.one <- read.table("actual/survey_1_2.csv", header = TRUE, sep=",")
+
+A.merlot.normal <- act.one[1, 3]
+C.pinot.special <- act.one[1, 5]
+
+A.merlot.normal.two <- act.one[2, 3]
+C.crap.special <- act.one[2, 5]
+
+A.merlot.treatment <- act.one[3, 3]
+B.crap.treatment <- act.one[3, 5]
+
+A.merlot.control <- act.one[4, 3]
+B.crap.control <- act.one[4, 5]
+
+# experiment 1
+AB.herd <- matrix(c(
+                    A.merlot.control, A.merlot.treatment,
+                    B.crap.control, B.crap.treatment
+                    ), nr=2, dimnames=list(c("control", "treatment"), c("A", "B")))
+
+nice.plot(AB.herd, "actual/experiment_1_AB.pdf", c(wine.A, wine.B))
+
+# experiment 2
+exp.special <- data.frame(value=c(
+                            A.merlot.normal, C.pinot.special,
+                            A.merlot.normal.two, C.crap.special,
+                            A.merlot.control, B.crap.control),
+                          station=rep(c("station 1", "station 2", "station 4"), each=2),
+                          wine=c("A", "B", "A", "B", "A", "B"))
+
+ggplot(exp.special,
+       aes(x=wine,
+           y=value,
+           fill=factor(wine))) +
+  facet_grid(. ~ station) +
+  geom_bar(stat="identity") +
+  theme_bw() +
+  opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
+ggsave("actual/experiment_2_ABC.pdf")
