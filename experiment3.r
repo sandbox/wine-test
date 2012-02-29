@@ -36,17 +36,18 @@ output.cloud <- function(wine, treatment, d, filename="wordcloud.png") {
   png(filename, width=1280,height=800)
   wordcloud(d$variable[crit],d$value[crit],
             scale=c(8,.2),
-            min.freq=3,
+            min.freq=1,
             max.words=Inf,
             random.order=FALSE,
             ordered.colors=TRUE,
-            rot.per=.10,
+            rot.per=.0,
             colors=as.character(words$color))
   dev.off()
 }
 
-experiment.three <- read.table("samples/survey_3.csv", header = TRUE, sep=",")
-words <- read.table("samples/descriptors.csv", header = TRUE, sep=",")
+experiment.three <- read.table("actual/survey_3.csv", header = TRUE, sep=",")
+words            <- read.table("actual/descriptors.csv", header = TRUE, sep=",")
+raw.words        <- read.table("actual/survey_3.csv", header = TRUE, sep=",")[,-3]
 
 exp.melt <- melt(experiment.three, id.vars = c("treatment", "wine"), fun=sum)
 word.freq.table <- cast(wine + treatment ~ variable | value, data=exp.melt, fun.aggregate=sum)$`1`
@@ -63,7 +64,6 @@ by.wine <- rowsum(experiment.three, experiment.three[,2])[,-(non.word.columns)]
 wine.D.ranks <- word.ranks(wine.D.berry.ranks, wine.D.earthy.ranks)
 wine.E.ranks <- word.ranks(wine.E.berry.ranks, wine.E.earthy.ranks)
 
-raw.words <- read.table("samples/survey_3.csv", header = TRUE, sep=",")[,-3]
 colnames(raw.words) <- c(colnames(raw.words)[1:2],
                          as.character(words[as.integer(sub("X","",colnames(raw.words)[-(1:2)])),1]))
 raw.words.melt <- melt(raw.words, id.vars = c("treatment", "wine"), fun=sum)
@@ -71,14 +71,34 @@ raw.words.melt.cast <- cast(wine + treatment ~ variable | value, data=raw.words.
 word.freq.df <- melt(raw.words.melt.cast)
 
 # charting the rank charts
-rank.chart(wine.D.ranks, "Wine D Word Usage Rank Given Association", "word-rank-wine-d.pdf")
-rank.chart(wine.E.ranks, "Wine E Word Usage Rank Given Association", "word-rank-wine-e.pdf")
+rank.chart(wine.D.ranks, "Wine D Word Usage Rank Given Association", "actual/word-rank-wine-d.pdf")
+rank.chart(wine.E.ranks, "Wine E Word Usage Rank Given Association", "actual/word-rank-wine-e.pdf")
 
 #wine, treatment
-output.cloud(1, 1, word.freq.df, "Wine D as Earthy.png")
-output.cloud(1, 2, word.freq.df, "Wine E as Earthy.png")
+output.cloud(1, 1, word.freq.df, "actual/Wine D as Earthy.png")
+output.cloud(1, 2, word.freq.df, "actual/Wine E as Earthy.png")
 
-output.cloud(2, 1, word.freq.df, "Wine E as Berry.png")
-output.cloud(2, 2, word.freq.df, "Wine D as Berry.png")
+output.cloud(2, 1, word.freq.df, "actual/Wine E as Berry.png")
+output.cloud(2, 2, word.freq.df, "actual/Wine D as Berry.png")
 
-# preference count visualizations
+# basic barcharts
+raw.words.melt.cast
+
+# overall total word choice
+graph.freq.df <- melt(apply(raw.words.melt.cast, 2, sum))
+graph.freq.df$variable <- factor(rownames(graph.freq.df))
+graph.freq.df$variable <- factor(graph.freq.df$variable, levels=as.character(graph.freq.df[with(graph.freq.df, order(value)), ]$variable), ordered=TRUE)
+colors <- as.character(words[order(graph.freq.df$variable),]$color)
+ggplot(graph.freq.df, aes(variable, value, fill=variable, colour=variable)) +
+  geom_bar(stat="identity") +
+  theme_bw() +
+  scale_colour_manual(values=colors) +
+  scale_fill_manual(values=colors) +
+  xlab("Descriptors") +
+  ylab("Frequency of Usage") +
+  opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
+ggsave("actual/Word Frequency.pdf", width=18,height=12)
+
+apply(raw.words.melt.cast, 2, sum)
+
+# preference count visualizations and analysis
