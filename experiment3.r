@@ -166,9 +166,15 @@ v.pref$variable <- as.character(words$word)
 n.pref <- data.frame(berry=(v.pref$Berry + 1)/(colSums(v.pref)["Berry"] + 15), earthy=(v.pref$Earthy + 1)/(colSums(v.pref)["Earthy"] + 15))
 nb.model.pref <- log(n.pref)
 
+m.pref$variable <- factor(m.pref$variable, levels=c("Black cherry", "Red fruits", "Juicy", "Plum", "Sweet", "Hearty", "Bright", "Spicy", "Peppery", "Complex", "Smokey", "Cedar", "Rustic", "Woodsy", "Earthy"), ordered=TRUE)
+
+m.pref.color <- as.character(words[as.character(cast(variable ~ value, data=m.pref, fun.aggregate=sum)$variable), ]$color)
+
 ggplot(m.pref, aes(variable, y=value, fill=variable, color=variable)) +
   facet_grid(. ~ wine.type) +
   geom_bar(stat="identity") +
+  scale_colour_manual(values=m.pref.color) +
+  scale_fill_manual(values=m.pref.color) +
   theme_bw() +
   opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
 ggsave("actual/words-given-pref.pdf")
@@ -176,6 +182,8 @@ ggsave("actual/words-given-pref.pdf")
 ggplot(m.pref, aes(wine.type, y=value, fill=variable, color=variable)) +
   facet_grid(. ~ variable) +
   geom_bar(stat="identity") +
+  scale_colour_manual(values=m.pref.color) +
+  scale_fill_manual(values=m.pref.color) +
   theme_bw() +
   opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
 ggsave("actual/pref-given-words.pdf")
