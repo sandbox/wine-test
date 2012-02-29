@@ -109,7 +109,76 @@ ggplot(graph.freq.df, aes(variable, value, fill=variable, colour=variable)) +
   opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
 ggsave("actual/Word Frequency.pdf", width=18,height=12)
 
+# priming on word choice bar charts
+raw.words.melt.cast$wine.letter <- factor(c("D", "E", "E", "D"))
+raw.words.melt.cast$wine.type <- factor(c("Berry", "Berry", "Earthy", "Earthy"))
+raw.words.melt.cast$coherence <- factor(c("Truth", "False", "Truth", "False"), levels=c("Truth", "False"), ordered=TRUE)
+priming.graph.df <- melt(data.frame(raw.words.melt.cast[,-(c(1:3))]), id=15:17)
+priming.graph.df$word.type <- c(rep("Earthy", 4),
+                                rep("Neutral", 4),
+                                rep("Neutral", 4),
+                                rep("Earthy", 4),
+                                rep("Berry", 4),
+                                rep("Neutral", 4),
+                                rep("Berry", 4),
+                                rep("Earthy", 4),
+                                rep("Earthy", 4),
+                                rep("Berry", 4),
+                                rep("Neutral", 4),
+                                rep("Earthy", 4),
+                                rep("Earthy", 4),
+                                rep("Berry", 4))
+priming.graph.colors <- as.character(words[mapply(function(x){ return(sub("\\.", " ", x)) }, levels(priming.graph.df$variable)), ]$color)
+
+ggplot(priming.graph.df, aes(wine.type, value, fill=variable, colour=variable)) +
+  geom_bar(stat="identity") +
+  facet_grid(word.type ~ variable) +
+  theme_bw() +
+  scale_colour_manual(values=priming.graph.colors) +
+  scale_fill_manual(values=priming.graph.colors) +
+  xlab("What was told") +
+  ylab("Frequency of Usage") +
+  opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
+ggsave("actual/by-word-type.pdf")
+
 # preference count visualizations and analysis
+preferences <- experiment.three[experiment.three$pref == 1, ]
+preferences$wine.type <- mapply(function(w,t){
+  if(w==2 && t==1) return("Earthy")
+  if(w==1 && t==1) return("Berry")
+  if (w==1 && t==2) return("Berry")
+  if (w==2 && t==2) return("Earthy")
+},
+  preferences$wine, preferences$treatment)
+
+colnames(preferences) <- c("treatment", "wine", "pref",
+                           as.character(words$word), "wine.type")
+
+m.pref <- melt(preferences[,-(1:3)], id=16)
+
+# probability of word use | preference
+c.pref <- cast(wine.type ~ variable | value, data = m.pref, fun.aggregate=sum)$`1`
+colnames(c.pref) <- c("wine.type", as.character(words$word))
+
+v.pref <- cast(variable ~ wine.type | value, data = m.pref, fun.aggregate=sum)$`1`
+v.pref$variable <- as.character(words$word)
+
+n.pref <- data.frame(berry=(v.pref$Berry + 1)/(colSums(v.pref)["Berry"] + 15), earthy=(v.pref$Earthy + 1)/(colSums(v.pref)["Earthy"] + 15))
+nb.model.pref <- log(n.pref)
+
+ggplot(m.pref, aes(variable, y=value, fill=variable, color=variable)) +
+  facet_grid(. ~ wine.type) +
+  geom_bar(stat="identity") +
+  theme_bw() +
+  opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
+ggsave("actual/words-given-pref.pdf")
+
+ggplot(m.pref, aes(wine.type, y=value, fill=variable, color=variable)) +
+  facet_grid(. ~ variable) +
+  geom_bar(stat="identity") +
+  theme_bw() +
+  opts(legend.position = "none", axis.title.x=theme_text(vjust=0))
+ggsave("actual/pref-given-words.pdf")
 
 # preference counts when told the truth vs false
 word.freq.table$wine.letter <- factor(c("D", "E", "E", "D"))
