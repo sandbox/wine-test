@@ -70,6 +70,11 @@ berry.word <- treatment.ranks(1, data.frame(t(apply(data.frame(word.freq.table[1
 earthy.word <- treatment.ranks(1, data.frame(t(apply(data.frame(word.freq.table[3:4, ]),2, sum))))
 wine.berry.to.earthy.total.ranks <- word.ranks(berry.word, earthy.word)
 
+
+# ranking coherence
+given.earthy.ranks <- word.ranks(wine.D.earthy.ranks, wine.E.earthy.ranks)
+given.berry.ranks <- word.ranks(wine.D.berry.ranks, wine.E.berry.ranks)
+
 colnames(raw.words) <- c(colnames(raw.words)[1:2],
                          as.character(words[as.integer(sub("X","",colnames(raw.words)[-(1:2)])),1]))
 raw.words.melt <- melt(raw.words, id.vars = c("treatment", "wine"), fun=sum)
@@ -83,6 +88,9 @@ rank.chart(wine.E.ranks, "Wine E Word Usage Rank Given Association", "actual/wor
 rank.chart(wine.berry.to.earthy.ranks, "Word Usage Rank Given Association", "actual/word-rank-berry-v-earthy.pdf")
 
 rank.chart(wine.berry.to.earthy.total.ranks, "Word Usage Rank Given Association", "actual/word-rank-berry-v-earthy-total.pdf")
+
+rank.chart(given.earthy.ranks, "Word Usage Wine Given Word", "actual/word-rank-d-v-e-earthy.pdf")
+rank.chart(given.berry.ranks, "Word Usage Wine Given Word", "actual/word-rank-d-v-e-berry.pdf")
 
 #wine, treatment
 output.cloud(1, 1, word.freq.df, "actual/Wine D as Berry.png")
