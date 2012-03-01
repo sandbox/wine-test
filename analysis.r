@@ -133,7 +133,7 @@ AB.herd <- matrix(c(
                     B.crap.control, B.crap.treatment
                     ), nr=2, dimnames=list(c("control", "treatment"), c("A", "B")))
 
-nice.plot(AB.herd, "actual/experiment_1_AB.pdf", c(wine.A, wine.B))
+nice.plot(AB.herd, "actual/experiment_1_AB.pdf", c(wine.B, wine.A))
 
 # experiment 2
 exp.special <- data.frame(value=c(

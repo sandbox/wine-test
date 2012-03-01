@@ -202,9 +202,10 @@ word.freq.table$wine.type <- factor(c("Berry", "Berry", "Earthy", "Earthy"))
 word.freq.table$coherence <- factor(c("Truth", "False", "Truth", "False"), levels=c("Truth", "False"), ordered=TRUE)
 ggplot(word.freq.table,
        aes(x=wine.letter,
-           y=pref,
+           y=pref/c(26+29, 5+8),
            fill=factor(wine.letter))) +
   facet_grid(. ~ coherence) +
+  ylab("Proportion of Preference") +
   geom_bar(stat="identity") +
   theme_bw()
 ggsave("actual/pref-count.pdf")
