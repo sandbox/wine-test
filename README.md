@@ -33,3 +33,10 @@ Scripts and visualizations to analyze a wine tasting experiment.
 * samples/descriptors.csv
   * word - the word being used to describe.  The row index can be used as a key to find out what word we are referring to in `survey_3.csv`.
   * weight - the associated sweetness weight of the word.  This is subjective but it should be a rough measure of how much the word connotates sweetness.
+
+# Actual Data
+
+It turned out that the actual data we got back was a little different
+than the sample data (particularly for experiments 1 and 2).
+Everything outputted for the actual data is done in the `actual`
+folder.
